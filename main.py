@@ -21,7 +21,7 @@ if codes:
     print(f"--- DIAGNOSTIC REPORT ---")
     for code_name, description in codes:
         with open("engine_codes_log.txt", "a") as f:
-            f.write(f"{time.ctime()}: [{code_name}] - {description} ")
+            f.write(f"{time.ctime()}: [{code_name}] - {description} \n")
     print("-" * 32)
 
 cvt_temp_sim = 20
@@ -54,21 +54,36 @@ while True:
 
 
     if mode == "REAL":
-        
+
         r_rpm = connection.query(obd.commands.RPM)
         r_temp_c = connection.query(obd.commands.COOLANT_TEMP)
-        r_cvt = connection.query(obd.commands['0121'])
 
         rpm = r_rpm.value.magnitude if not r_rpm.is_null() else 0
         temp_c = r_temp_c.value.magnitude if not r_temp_c.is_null() else 0
-        cvt_temp = r_cvt.value.magnitude if not r_cvt.is_null() else 0
+        
+        if vehicle_type == "NISSAN":
+            r_cvt = connection.query(obd.commands['0121'])
+            car_name = "2014 Nissan Rouge Select"
+
+            cvt_temp = r_cvt.value.magnitude if not r_cvt.is_null() else 0
+
+        elif vehicle_type == "JETTA":
+            car_name = "1996 Voltwagen Jetta GLX"
+
+            cvt_temp = 0
+        
+        else:
+            car_name = "Unknown Vehicle"
+            cvt_temp = 0
+
     else:
+        car_name = "Simulator Vehicle"
         rpm = random.randint(800, 3000)
         temp_c = 90
         cvt_temp_sim += 1
         cvt_temp = cvt_temp_sim
 
-    print(f"--- 2014 NISSAN ROGUE VITALS ---")
+    print(f"--- {car_name} Vitals ---")
     print(f"Engine Speed: {rpm} RPM")
 
     if temp_c > 110:
