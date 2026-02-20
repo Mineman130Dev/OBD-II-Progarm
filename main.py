@@ -4,25 +4,57 @@ import obd
 import random
 
 connection = obd.OBD()
-cvt_overheat_logged = False
 logs = []
-
 last_voice_alert = 0
 
 if connection.is_connected():
     mode = "REAL"
+    print("Scanning For Engine Codes")
+    codes = connection.get_dtc()
 else:
     mode = "SIMULATOR"
     print('No adapter found. Starting in SIMULATOR MODE')
+    codes = [("P0420", "Catalyst System Efficiency Below Threshold")] # FAKE CODE
     time.sleep(2)
+
+if codes:
+    print(f"--- DIAGNOSTIC REPORT ---")
+    for code_name, description in codes:
+        with open("engine_codes_log.txt", "a") as f:
+            f.write(f"{time.ctime()}: [{code_name}] - {description} ")
+    print("-" * 32)
 
 cvt_temp_sim = 20
 temp_c_sim = 25
 
+def detect_vehicle(connection):
+    if not connection.is_connected():
+        return "SIMULATOR"
+    
+    try:
+        vin_response = connection.query(obd.commands.VIN)
+        vin = str(vin_response.value)
+        print(f"DETECTED VIN: {vin}")
+
+        if "JN8" in vin:
+            return "NISSAN"
+        elif "3VW" in vin or "WVW" in vin:
+            return "JETTA"
+        else:
+            return "UNKNOWN"
+    except:
+        return "UNKNOWN"
+    
+vehicle_type = detect_vehicle(connection)
+print(f"Configuring system for: {vehicle_type}")
+
 while True:
     os.system('cls' if os.name == 'nt' else 'clear')
+    current_time = time.time()        
+
 
     if mode == "REAL":
+        
         r_rpm = connection.query(obd.commands.RPM)
         r_temp_c = connection.query(obd.commands.COOLANT_TEMP)
         r_cvt = connection.query(obd.commands['0121'])
@@ -50,14 +82,13 @@ while True:
 
     if cvt_temp > 100:
         print(f"CVT Temp: {cvt_temp}°C \nWARNING: CVT FUILD OVERHEATING")
-        current_time = time.time()        
         logs.append("CVT Fuild Overheat Detected")
         with open("nissan_health_log.txt", "a") as f:
             f.write(f"{time.ctime()}: CVT Hot - {cvt_temp}C\n")
     else:
         print(f"CVT Temp: {cvt_temp}°C")
 
-    print("-" * 30)
+    print("-" * 32)
 
     if cvt_temp > 100:
         if current_time - last_voice_alert > 5:
