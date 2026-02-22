@@ -2,6 +2,7 @@ import time
 import os
 import obd
 import random
+from vehicles import nissan, vw
 
 connection = obd.OBD()
 logs = []
@@ -54,27 +55,20 @@ while True:
 
 
     if mode == "REAL":
-
-        r_rpm = connection.query(obd.commands.RPM)
-        r_temp_c = connection.query(obd.commands.COOLANT_TEMP)
-
-        rpm = r_rpm.value.magnitude if not r_rpm.is_null() else 0
-        temp_c = r_temp_c.value.magnitude if not r_temp_c.is_null() else 0
         
         if vehicle_type == "NISSAN":
-            r_cvt = connection.query(obd.commands['0121'])
-            car_name = "2014 Nissan Rouge Select"
-
-            cvt_temp = r_cvt.value.magnitude if not r_cvt.is_null() else 0
+            data = nissan.get_vitals(connection)
 
         elif vehicle_type == "JETTA":
-            car_name = "1996 Voltwagen Jetta GLX"
+            data = vw.get_vitals(connection)
 
-            cvt_temp = 0
-        
         else:
-            car_name = "Unknown Vehicle"
-            cvt_temp = 0
+            data = {"name": "Unknown", "rpm": 0, "temp_c": 0, "cvt_temp": 0}
+        
+        car_name = data["name"]
+        rpm      = data["rpm"]
+        temp_c   = data["temp_c"]
+        cvt_temp = data["cvt_temp"]
 
     else:
         car_name = "Simulator Vehicle"
@@ -90,7 +84,7 @@ while True:
         print(f"Coolant Temp: {temp_c}°C \nWARNING: COOLANT OVERHEATING")
         os.system('say"Warning: Coolant Temperature High"')
         logs.append("Coolant Overheat Detected")
-        with open("nissan_health_log.txt", "a") as f:
+        with open("vehicle_health_log.txt", "a") as f:
             f.write(f"{time.ctime()}: Coolant Hot - {temp_c}C\n")
     else:
         print(f"Coolant Temp: {temp_c}°C")
@@ -98,7 +92,7 @@ while True:
     if cvt_temp > 100:
         print(f"CVT Temp: {cvt_temp}°C \nWARNING: CVT FUILD OVERHEATING")
         logs.append("CVT Fuild Overheat Detected")
-        with open("nissan_health_log.txt", "a") as f:
+        with open("vehicle_health_log.txt", "a") as f:
             f.write(f"{time.ctime()}: CVT Hot - {cvt_temp}C\n")
     else:
         print(f"CVT Temp: {cvt_temp}°C")
