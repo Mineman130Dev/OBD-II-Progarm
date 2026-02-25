@@ -49,10 +49,14 @@ def detect_vehicle(connection):
 vehicle_type = detect_vehicle(connection)
 print(f"Configuring system for: {vehicle_type}")
 
+NISSAN_OIL_TARGET = 75000
+JETTA_OIL_TARGET = 153000
+
+oil_announced = False
+
 while True:
     os.system('cls' if os.name == 'nt' else 'clear')
-    current_time = time.time()        
-
+    current_time = time.time()   
 
     if mode == "REAL":
         
@@ -108,6 +112,30 @@ while True:
         if current_time - last_voice_alert > 5:
             os.system('say "Emergency: Engine Overheating"&')
             last_voice_alert = current_time
+
+    if vehicle_type == "NISSAN":
+        oil_target = NISSAN_OIL_TARGET
+    if vehicle_type == "JETTA":
+        oil_target = JETTA_OIL_TARGET
+    else:
+        oil_target = None
+
+    if oil_target and data.get("odo"):
+        miles_left = oil_target - data["odo"]
+
+        if miles_left <=0:
+            oil_status = "CHANGE OIL ASAP"
+        else:
+            oil_status = f"{int(miles_left)} miles until oil change"
+    else:
+        oil_status = "Odometer Data Unavailable"
+
+    print(f"Service Info: {oil_status}")
+
+    if not oil_announced and miles_left is not None:
+        if miles_left < 500:
+            os.system(f'say "Reminder: You have {int(miles_left)} miles remaining until your oil change is due" &')
+        oil_announced = True
 
     print(f"Total Events Logged: {len(logs)}")
     time.sleep(1)
