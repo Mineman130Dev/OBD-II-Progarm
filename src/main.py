@@ -26,8 +26,8 @@ if codes:
             f.write(f"{time.ctime()}: [{code_name}] - {description} \n")
     print("-" * 32)
 
-cvt_temp_sim = 20
 temp_c_sim = 25
+bat_level_sim = 12.6
 
 def detect_vehicle(connection):
     if not connection.is_connected():
@@ -75,19 +75,18 @@ while True:
             data = vw.get_vitals(connection)
 
         else:
-            data = {"name": "Unknown", "rpm": 0, "temp_c": 0, "cvt_temp": 0}
+            data = {"name": "Unknown", "rpm": 0, "temp_c": 0}
         
         car_name = data["name"]
         rpm      = data["rpm"]
         temp_c   = data["temp_c"]
-        cvt_temp = data["cvt_temp"]
+        bat_level = data["bat_level"]
 
     else:
         car_name = "Simulator Vehicle"
         rpm = random.randint(800, 3000)
         temp_c = 90
-        cvt_temp_sim += 1
-        cvt_temp = cvt_temp_sim
+        bat_level = bat_level_sim
 
     print(f"--- {car_name} Vitals ---")
     print(f"Engine Speed: {rpm} RPM")
@@ -101,13 +100,7 @@ while True:
     else:
         print(f"Coolant Temp: {temp_c}°C")
 
-    if cvt_temp > 100:
-        print(f"CVT Temp: {cvt_temp}°C \nWARNING: CVT FUILD OVERHEATING")
-        logs.append("CVT Fuild Overheat Detected")
-        with open("vehicle_health_log.txt", "a") as f:
-            f.write(f"{time.ctime()}: CVT Hot - {cvt_temp}C\n")
-    else:
-        print(f"CVT Temp: {cvt_temp}°C")
+        print(f"Battery Voltage: {bat_level}v")
 
     if vehicle_type == "NISSAN":
         oil_target = NISSAN_OIL_TARGET
@@ -129,16 +122,6 @@ while True:
     print(f"Service Info: {oil_status}")
 
     print("-" * 32)
-
-    if cvt_temp > 100:
-        if current_time - last_voice_alert > 5:
-            os.system('say "Warning: Transmission Overheating"&')
-            last_voice_alert = current_time
-
-    if cvt_temp > 106:
-        if current_time - last_voice_alert > 5:
-            os.system('say "Emergency: Engine Overheating"&')
-            last_voice_alert = current_time
 
     if not oil_announced and miles_left is not None:
         if miles_left < 500:
