@@ -3,6 +3,7 @@ import os
 import obd
 import random
 from vehicles import nissan, vw
+import json
 
 connection = obd.OBD()
 logs = []
@@ -33,17 +34,22 @@ def detect_vehicle(connection):
         return "SIMULATOR"
     
     try:
-        vin_response = connection.query(obd.commands.VIN)
-        vin = str(vin_response.value)
-        print(f"DETECTED VIN: {vin}")
-
-        if "JN8" in vin:
-            return "NISSAN"
-        elif "3VW" in vin or "WVW" in vin:
-            return "JETTA"
-        else:
+        vin_res = connection.query(obd.commands.VIN)
+        if vin_res.is_null():
             return "UNKNOWN"
-    except:
+        
+        vin = str(vin_res.value).upper()
+
+        with open("config.json", "r") as f:
+            brand_data = json.load(f)
+
+        for brand, prefixes in brand_data.items():
+            if any(vin.startswith(p) for p in prefixes):
+                return brand
+            
+        return "UNKNOWN"
+    except Exception as e:
+        print(f"Detection Error: {e}")
         return "UNKNOWN"
     
 vehicle_type = detect_vehicle(connection)
@@ -103,18 +109,6 @@ while True:
     else:
         print(f"CVT Temp: {cvt_temp}°C")
 
-    print("-" * 32)
-
-    if cvt_temp > 100:
-        if current_time - last_voice_alert > 5:
-            os.system('say "Warning: Transmission Overheating"&')
-            last_voice_alert = current_time
-
-    if cvt_temp > 106:
-        if current_time - last_voice_alert > 5:
-            os.system('say "Emergency: Engine Overheating"&')
-            last_voice_alert = current_time
-
     if vehicle_type == "NISSAN":
         oil_target = NISSAN_OIL_TARGET
     if vehicle_type == "JETTA":
@@ -133,6 +127,18 @@ while True:
         oil_status = "Odometer Data Unavailable"
 
     print(f"Service Info: {oil_status}")
+
+    print("-" * 32)
+
+    if cvt_temp > 100:
+        if current_time - last_voice_alert > 5:
+            os.system('say "Warning: Transmission Overheating"&')
+            last_voice_alert = current_time
+
+    if cvt_temp > 106:
+        if current_time - last_voice_alert > 5:
+            os.system('say "Emergency: Engine Overheating"&')
+            last_voice_alert = current_time
 
     if not oil_announced and miles_left is not None:
         if miles_left < 500:
