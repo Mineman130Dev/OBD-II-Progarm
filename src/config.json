@@ -2,5 +2,7 @@
     "MAZDA": ["JM1", "JM2", "JM3", "JC1", "JC2", "1YV", "3MD", "3MJ", "3MZ", "3MV", "4F2", "4F4", "7MM"],
     "NISSAN": ["JN1", "JN8", "JN3", "1N4", "1N6", "3N1", "5N1"],
     "VW": ["WVW", "3VW"],
-    "INFINITI": ["JNK", "JNK", "5N3"]
+    "INFINITI": ["JNK", "JNK", "5N3"],
+    "AUDI": ["WAU", "WA1"],
+    "SCION": ["JTD", "VNK", "3MY"]
 }

@@ -71,7 +71,7 @@ while True:
         if vehicle_type == "NISSAN":
             data = nissan.get_vitals(connection)
 
-        elif vehicle_type == "JETTA":
+        elif vehicle_type == "JETTA" or vehicle_type == "AUDI":
             data = vw.get_vitals(connection)
 
         else:
