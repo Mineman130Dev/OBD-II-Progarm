@@ -56,7 +56,9 @@ oil_announced = False
 
 while True:
     os.system('cls' if os.name == 'nt' else 'clear')
-    current_time = time.time()   
+    current_time = time.time() 
+
+    miles_left = None  
 
     if mode == "REAL":
         
