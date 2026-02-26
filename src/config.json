@@ -5,5 +5,6 @@
     "INFINITI": ["JNK", "JNK", "5N3"],
     "AUDI": ["WAU", "WA1"],
     "SCION": ["JTD", "VNK", "3MY"],
-    "JEEP": ["1C6RJTBG"]
+    "JEEP": ["1C6RJTBG"],
+    "SUBARU": ["JF1", "JF2", "JF3", "4S3", "4S4"]
 }
