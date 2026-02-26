@@ -1,7 +1,7 @@
 import time
 import os
 import obd
-from vehicles import nissan, vw, simulator
+from vehicles import nissan, vw, jeep, simulator
 import json
 
 connection = obd.OBD()
@@ -70,6 +70,9 @@ while True:
         elif vehicle_type == "JETTA" or vehicle_type == "AUDI":
             data = vw.get_vitals(connection)
 
+        elif vehicle_type == "JEEP":
+            data = jeep.get_vitals(connection)
+            
         else:
             data = {"name": "Unknown", "rpm": 0, "temp_c": 0}
 
