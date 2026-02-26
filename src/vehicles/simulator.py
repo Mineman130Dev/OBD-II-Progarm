@@ -2,7 +2,7 @@ import random
 
 sim_state = {
     "temp_c": 90,
-    "bat_level": 12.6
+    "bat_level": 14.2
 }
 
 def get_vitals():

@@ -1,7 +1,6 @@
 import time
 import os
 import obd
-import random
 from vehicles import nissan, vw, simulator
 import json
 
@@ -16,13 +15,12 @@ if connection.is_connected():
 else:
     mode = "SIMULATOR"
     print('No adapter found. Starting in SIMULATOR MODE')
-    codes = [("P0420", "Catalyst System Efficiency Below Threshold")] # FAKE CODE
     time.sleep(2)
 
 if codes:
     print(f"--- DIAGNOSTIC REPORT ---")
     for code_name, description in codes:
-        with open("engine_codes_log.txt", "a") as f:
+        with open("src/engine_codes_log.txt", "a") as f:
             f.write(f"{time.ctime()}: [{code_name}] - {description} \n")
     print("-" * 32)
 
@@ -124,5 +122,11 @@ while True:
         if miles_left < 500:
             os.system(f'say "Reminder: You have {int(miles_left)} miles remaining until your oil change is due" &')
         oil_announced = True
+    
+    if rpm > 500:
+        if bat_level < 13.2:
+            print("WARNING: Alternator Output Low!")
+        elif bat_level > 14.8:
+            print("WARNING: Overcharging - Regulator Fault!")
 
     time.sleep(1)
