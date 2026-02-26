@@ -2,7 +2,7 @@ import time
 import os
 import obd
 import random
-from vehicles import nissan, vw
+from vehicles import nissan, vw, simulator
 import json
 
 connection = obd.OBD()
@@ -25,9 +25,6 @@ if codes:
         with open("engine_codes_log.txt", "a") as f:
             f.write(f"{time.ctime()}: [{code_name}] - {description} \n")
     print("-" * 32)
-
-temp_c_sim = 25
-bat_level_sim = 12.6
 
 def detect_vehicle(connection):
     if not connection.is_connected():
@@ -58,6 +55,7 @@ print(f"Configuring system for: {vehicle_type}")
 NISSAN_OIL_TARGET = 75000
 JETTA_OIL_TARGET = 153000
 
+
 oil_announced = False
 
 while True:
@@ -76,17 +74,14 @@ while True:
 
         else:
             data = {"name": "Unknown", "rpm": 0, "temp_c": 0}
-        
-        car_name = data["name"]
-        rpm      = data["rpm"]
-        temp_c   = data["temp_c"]
-        bat_level = data["bat_level"]
 
     else:
-        car_name = "Simulator Vehicle"
-        rpm = random.randint(800, 3000)
-        temp_c = 90
-        bat_level = bat_level_sim
+        data = simulator.get_vitals()
+
+    car_name = data["name"]
+    rpm      = data["rpm"]
+    temp_c   = data["temp_c"]
+    bat_level = data["bat_level"]
 
     print(f"--- {car_name} Vitals ---")
     print(f"Engine Speed: {rpm} RPM")
@@ -123,10 +118,11 @@ while True:
 
     print("-" * 32)
 
+    print(f"Total Events Logged: {len(logs)}")
+
     if not oil_announced and miles_left is not None:
         if miles_left < 500:
             os.system(f'say "Reminder: You have {int(miles_left)} miles remaining until your oil change is due" &')
         oil_announced = True
 
-    print(f"Total Events Logged: {len(logs)}")
     time.sleep(1)
