@@ -1,7 +1,7 @@
 import time
 import os
 import obd
-from vehicles import nissan, vw, jeep, simulator
+from vehicles import nissan, vw, jeep, simulator, unknown, subaru
 import json
 import time
 
@@ -79,17 +79,21 @@ try:
 
             elif vehicle_type == "JEEP":
                 data = jeep.get_vitals(connection)
+            
+            elif vehicle_type == "SUBARU":
+                data = subaru.get_vitals(connection)
 
             else:
-                data = {"name": "Unknown", "rpm": 0, "temp_c": 0}
+                data = unknown.get_vitals()
 
         else:
             data = simulator.get_vitals()
 
-        car_name = data["name"]
-        rpm      = data["rpm"]
-        temp_c   = data["temp_c"]
+        car_name  = data["name"]
+        rpm       = data["rpm"]
+        temp_c    = data["temp_c"]
         bat_level = data["bat_level"]
+        oil_temp = data.get("oil_temp", 0)
 
         print(f"--- {car_name} Vitals ---")
         print(f"Engine Speed: {rpm} RPM")
@@ -109,6 +113,8 @@ try:
             print(f"Coolant Temp: {temp_c}°C")
 
             print(f"Battery Voltage: {bat_level}v")
+
+        print(f"Oil Temp: {oil_temp}°C")
 
         if vehicle_type == "NISSAN":
             oil_target = NISSAN_OIL_TARGET

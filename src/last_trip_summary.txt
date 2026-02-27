@@ -1,11 +1,11 @@
 
 =========================================
         🏁 TRIP SUMMARY: Simulator Vehicle 🏁
-               Fri Feb 27 12:38:47 2026
+               Fri Feb 27 14:01:30 2026
 =========================================
-⏱️  Duration:      1.9 minutes
-🔥  Max Temp:      92.5°C
-📈  Max RPM:       2995 RPM
+⏱️  Duration:      0.2 minutes
+🔥  Max Temp:      90.7°C
+📈  Max RPM:       2595 RPM
 💰  Total Cost:    $0.0
 =========================================
     
