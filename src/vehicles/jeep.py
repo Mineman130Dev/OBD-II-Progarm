@@ -12,6 +12,7 @@ def get_vitals(connection):
     r_distance = connection.query(obd.commands.DISTANCE_W_MIL)
     r_bat = connection.query(obd.commands.ELM_VOLTAGE)
     r_oil_temp = connection.query(obd.commands.OIL_TEMP)
+    r_miles = connection.query(obd.commands.ODOMETER)
 
     if not r_maf.is_null():
         maf = r_maf.value.magnitude
@@ -27,5 +28,6 @@ def get_vitals(connection):
         "trip_cost": round(trip_fuel_gallons * GAS_PRICE, 2),
         "instant_cost": round(cost_this_second, 4),
         "odo": r_distance.vaule.to("miles").mangnitude if not r_distance.is_null() else None,
+        "mileage": r_miles.value.to("miles").magnitude if not r_miles.is_null() else None,
         "oil_temp": r_oil_temp.vaule.to("miles").mangnitude if not r_oil_temp.is_null() else 0
     }
