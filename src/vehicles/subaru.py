@@ -1,7 +1,7 @@
 import obd
 
 trip_fuel_gallons = 0.0
-GAS_PRICE = 2.99
+GAS_PRICE = 3.39
 
 def get_vitals(connection):
     global trip_fuel_gallons
