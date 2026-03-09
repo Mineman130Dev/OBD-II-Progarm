@@ -54,6 +54,7 @@ print(f"Configuring system for: {vehicle_type}")
 
 NISSAN_OIL_TARGET = 75000
 JETTA_OIL_TARGET = 153000
+SIMULATOR_OIL_TARGET = 100000
 
 oil_announced = False
 
@@ -94,6 +95,8 @@ try:
         temp_c    = data["temp_c"]
         bat_level = data["bat_level"]
         oil_temp = data.get("oil_temp", 0)
+        obo = data.get("obo")
+        mileage = data.get("mileage")
 
         print(f"--- {car_name} Vitals ---")
         print(f"Engine Speed: {rpm} RPM")
@@ -112,14 +115,18 @@ try:
         else:
             print(f"Coolant Temp: {temp_c}°C")
 
-            print(f"Battery Voltage: {bat_level}v")
+        print(f"Battery Voltage: {bat_level}v")
 
         print(f"Oil Temp: {oil_temp}°C")
 
+        print(f"Mileage: {mileage} miles")
+
         if vehicle_type == "NISSAN":
             oil_target = NISSAN_OIL_TARGET
-        if vehicle_type == "JETTA":
+        elif vehicle_type == "JETTA":
             oil_target = JETTA_OIL_TARGET
+        elif vehicle_type == "SIMULATOR":
+            oil_target = SIMULATOR_OIL_TARGET
         else:
             oil_target = None
 
